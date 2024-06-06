@@ -105,10 +105,8 @@
                 if (data.hasOwnProperty(key)) {
                     const value = data[key];
                     if (typeof value === 'object') {
-                        // If the value is an object, recursively format it
                         formattedData += formatData(value, `${prefix}${key}.`);
                     } else {
-                        // Otherwise, display the key-value pair
                         formattedData += `<strong>${key}:</strong> ${value}<br>`;
                     }
                 }
