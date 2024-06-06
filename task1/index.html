@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get by ID</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #6B8A7A;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: calc(75% - 5px); 
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            display: inline-block; 
+            outline:none;
+            font-size: 16px;
+        }
+        
+        button {
+            width: calc(25% - 5px);
+            padding: 10px;
+            background-color: #254336;
+            color: #fff;
+            border: 2px solid #254336;
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: top; 
+        }
+
+        button:hover{
+            border: 2px solid #254336;
+            background-color: #fff!important;
+            color: #254336;
+        }
+        
+
+        #response {
+            white-space: pre-wrap;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form">
+            <h1>Fetch API Data</h1>
+            <label for="id">Enter your ID:</label>
+            <input type="text" id="id">
+            <button id="fetchButton">Fetch Data</button>
+            <div id="response"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', () => {
+            const id = document.getElementById('id').value;
+            const apiUrl = `http://api.edupulse.software/api/camp/${id}`;
+            const proxyUrl = `http://localhost:3000/api?url=${encodeURIComponent(apiUrl)}`;
+            fetch(proxyUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Data parsed: ", data);
+                    document.getElementById('response').innerHTML = formatData(data);
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    document.getElementById('response').textContent = 'Error: ' + error.message;
+                });
+        });
+
+        function formatData(data, prefix = '') {
+            let formattedData = '';
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const value = data[key];
+                    if (typeof value === 'object') {
+                        // If the value is an object, recursively format it
+                        formattedData += formatData(value, `${prefix}${key}.`);
+                    } else {
+                        // Otherwise, display the key-value pair
+                        formattedData += `<strong>${key}:</strong> ${value}<br>`;
+                    }
+                }
+            }
+            return formattedData;
+        }
+        
+    </script>
+</body>
+</html>
